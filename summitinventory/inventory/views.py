@@ -11,7 +11,6 @@ from .models import Inventory
 @api_view(['GET'])
 def get_product(request):
     payload = token_authentication(request)
-    # if payload['permissions'] != 'read' or payload['permissions'] != '':
     if 'read' not in payload['permissions'] and 'admin' not in payload['permissions']:
         return Response(
             {'detail':"You do not have permissions for these actions",
@@ -42,7 +41,10 @@ def list_all_products(request):
              'Permissions':payload['permissions']}, 
             status='403')
     
-    items = Inventory.objects.all()
+    if 'read' in payload['permissions']:
+        items = Inventory.objects.filter(is_deleted=False)
+    if 'admin' in payload['permissions']:
+        items = Inventory.objects.all()
     
     serialize = InventorySerializer(items, many=True)
     return Response(serialize.data)
@@ -50,7 +52,6 @@ def list_all_products(request):
 @api_view(['POST'])
 def add_product(request):
     payload = token_authentication(request)
-    # if payload['permissions'] != '2' or payload['permissions'] != '3':
     if 'manage' not in payload['permissions'] and 'admin' not in payload['permissions']:
         return Response(
             {'detail':"You do not have permissions for these actions"}, 
@@ -71,11 +72,11 @@ def add_product(request):
 
 @api_view(['POST'])
 def update_product(request, id):
-    # payload = token_authentication(request)
-    # if 'manage' not in payload['permissions'] and 'admin' not in payload['permissions']:
-    #     return Response(
-    #         {'detail':"You do not have permissions for these actions"}, 
-    #         status='403')
+    payload = token_authentication(request)
+    if 'manage' not in payload['permissions'] and 'admin' not in payload['permissions']:
+        return Response(
+            {'detail':"You do not have permissions for these actions"}, 
+            status='403')
     
     try:
         item = Inventory.objects.get(id=id)
@@ -87,21 +88,53 @@ def update_product(request, id):
             item.quantity = request.GET.get('quantity')
         
         item.save()
-        # serializer = InventorySerializer(item)
         return Response(status="200")
-        # return Response(id)
-        
     except ObjectDoesNotExist:
-        return Response({'detail':'Item not found'})
-    # return Response(request.GET)
+        raise exceptions.ErrorDetail('Item not found')
 
 @api_view(['POST'])
-def soft_delete_product(request):
+def soft_delete_product(request, id):
     payload = token_authentication(request)
-    if payload['permissions'] != '2' or payload['permissions'] != '3':
+    if 'manage' not in payload['permissions'] and 'admin' not in payload['permissions']:
         return Response(
             {'detail':"You do not have permissions for these actions"}, 
             status='403')
+    
+    try:
+        item = Inventory.objects.get(id=id)
+        item.soft_delete()
+        item.save()
+        return Response(status="200")
+    except ObjectDoesNotExist:
+        raise exceptions.ErrorDetail('Item not found')
 
-def hard_delete_product(request):
-    pass
+@api_view(['POST'])
+def restore_product(request, id):
+    payload = token_authentication(request)
+    if 'manage' not in payload['permissions'] and 'admin' not in payload['permissions']:
+        return Response(
+            {'detail':"You do not have permissions for these actions"}, 
+            status='403')
+    
+    try:
+        item = Inventory.objects.get(id=id)
+        item.restore()
+        item.save()
+        return Response(status="200")
+    except ObjectDoesNotExist:
+        raise exceptions.ErrorDetail('Item not found')
+
+@api_view(['POST'])
+def hard_delete_product(request, id):
+    payload = token_authentication(request)
+    if 'admin' not in payload['permissions']:
+        return Response(
+            {'detail':"You do not have permissions for these actions"}, 
+            status='403')
+    
+    try:
+        item = Inventory.objects.get(id=id)
+        item.delete()
+        return Response(status="200")
+    except ObjectDoesNotExist:
+        raise exceptions.ErrorDetail('Item not found')
