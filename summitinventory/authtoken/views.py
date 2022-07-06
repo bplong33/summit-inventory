@@ -23,7 +23,7 @@ def add_user(request):
 
 @api_view(['POST'])
 def read_token(request):
-    user = user_authenticate(request, '1')
+    user = user_authenticate(request, 1)
     token = get_token(user, 'read')
     user.token = token
     user.save()
@@ -31,7 +31,7 @@ def read_token(request):
 
 @api_view(['POST'])
 def manage_token(request):
-    user = user_authenticate(request, '2')
+    user = user_authenticate(request, 2)
     token = get_token(user, 'manage')
     user.token = token
     user.save()
@@ -39,7 +39,7 @@ def manage_token(request):
 
 @api_view(['POST'])
 def read_manage_token(request):
-    user = user_authenticate(request, '3')
+    user = user_authenticate(request, 3)
     token = get_token(user, 'read/manage')
     user.token = token
     user.save()
@@ -47,7 +47,7 @@ def read_manage_token(request):
 
 @api_view(['POST'])
 def admin_token(request):
-    user = user_authenticate(request, '4')
+    user = user_authenticate(request, 4)
     token = get_token(user, 'admin')
     user.token = token
     user.save()
