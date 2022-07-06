@@ -78,12 +78,18 @@ WSGI_APPLICATION = 'summitinventory.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'summitinventory',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'NAME': 'summitinventory',
+        'NAME': 'ddgh42dcfoemgc',
+        # 'USER': 'postgres',
+        'USER': 'xmfgxnteixbrhw',
+        # 'PASSWORD': 'password',
+        'PASSWORD': '9f54a12192f6db549c61a9099e206af8f697113411deda299f9ee83883f4029b',
+        # 'HOST': 'localhost',
+        'HOST':'ec2-34-233-115-14.compute-1.amazonaws.com',
+        # 'PORT': '',
+        'PORT': '5432',
     }
 }
 
