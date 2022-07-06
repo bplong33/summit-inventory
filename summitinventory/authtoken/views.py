@@ -7,7 +7,7 @@ from .serializers import InventoryUserSerializer
 from .authenticate import user_authenticate, get_token
 import jwt
 
-# Create your views here.
+# list_users and add_user endpoinds are for testing purposes
 @api_view(['GET'])
 def list_users(request):
     userlist = InventoryUser.objects.all()
